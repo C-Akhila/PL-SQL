@@ -1,0 +1,66 @@
+REAL-TIME SCENARIO -2
+++++++++++++++++++++
+
+Aadhar Updation Using PLSQL - Real Time Scenarios :
+We generally face this Issue to Update some of the details in Aadhaar - We can achieve this by using PLSQL Concepts.
+------------------------------------------------------------------------------------------------------------------------------------------------------
+CREATE TABLE AADHAR_DETAILS
+ (
+AADHAR_NUM  NUMBER,
+ NAME VARCHAR2(100),
+ ADDRESS VARCHAR2(100),
+ MOB_NUM  NUMBER,
+ EMAIL  VARCHAR2(50));
+ 
+ INSERT INTO AADHAR_DETAILS VALUES(24567892345,'Akhila','Knp',9866773597,'abc@gmail.com');
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++==
+CREATE OR REPLACE PROCEDURE AADHAR_UPDATION(
+P_AADHAR_NUM   NUMBER,
+P_NAME  VARCHAR2,
+P_ADDRESS  VARCHAR2,
+P_MOB_NUM  NUMBER,
+P_EMAIL VARCHAR2,
+P_STATUS  OUT VARCHAR2)
+AS
+BEGIN
+UPDATE AADHAR_DETAILS SET
+NAME=P_NAME,
+ADDRESS=P_ADDRESS,
+MOB_NUM=P_MOB_NUM,
+EMAIL=P_EMAIL  WHERE  AADHAR_NUM=P_ADHAR_NUM;
+IF SQL%FOUND THEN
+P_STATUS:='AAdhar Details are Updates Successfully.';
+ELSE
+P_STATUS:='Error in server,Please try after sometime.';
+END IF;
+END;
+/
+===========================================================EXECUTION PROCESS==================================================
+1)DECLARE
+RESULT   VARCHAR2(100);
+BEGIN
+AADHAR_UPDATION(
+P_AADHAR_NUM =>543647863473,
+P_NAME  =>'Akhila chukkala',
+P_ADDRESS =>'Bengaluru',
+P_MOB_NUM   =>9866855180,
+P_EMAIL   =>'akhilachukkala4@gmail.com',
+P_STATUS    =>RESULT);
+DBMS_OUTPUT.PUT_LINE(RESULT);
+END;
+/	
+==================================================
+2)DECLARE
+RESULT   VARCHAR2(100);
+BEGIN
+AAADHAR_UPDATION(
+P_ADHAR_NUM  =>24567892345,
+P_NAME  =>'Akhila chukkala',
+P_ADDRESS =>'Bengaluru',
+P_MOB_NUM   =>9866855180,
+P_EMAIL   =>'akhilachukkala4@gmail.com',
+P_STATUS    =>RESULT);
+DBMS_OUTPUT.PUT_LINE(RESULT);
+END;
+/	
+============================================================
