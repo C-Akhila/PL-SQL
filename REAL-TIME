@@ -1,0 +1,94 @@
+
+--==================================PL/SQL============================================
+
+--Aadhar and Pan link Status :
+--=========================================
+/*Basic Validation :
+Whether PAN is Valid or Not
+Whether AADHAAR is Valid or Not
+Whether PAN and AADHAAR are Linked or Not*/
+
+TABLE-1
+-------------
+create table pan_card(pan_num   varchar2(20), Name  varchar2(20),DOB  date);
+insert into pan_card values('CS1111113D','Akhila','01-Jan-2000');
+insert into pan_card values('ABCDE2222','Suman','01-feb-2000');
+select*from pan_card;
+TABLE-2
+------------
+create  table Adhar_card(Adhar_Num   number, Name  varchar2(20),DOB date);
+insert into   Adhar_card values(34777888999,'Akhila','01-Jan-2000');
+insert into   Adhar_card  values(1234567892,'Suman','01-feb-2000');
+drop table Adhar_card;
+select*from Adhar_card;
+TABLE-3:
+----------=
+create table Adhar_Pan_Link( Adhar_Num number,
+pan_num varchar2(20), link_status  char(1));
+
+insert  into Adhar_Pan_Link values(34777888999,'CS1111113D','Y');
+insert  into Adhar_Pan_Link values(1234567892,'ABCDE2222','N');
+------------------------------------------------------------------------------------------------
+set serveroutput on;
+create or replace procedure Adhar_Pan_Link_Pro(p_pan_num  varchar2,p_Adhar_num  number,p_msg  out varchar2)
+As
+L_count  number;
+L_pan_num  varchar2(40);
+l_Adhar_num  varchar2(40);
+ INVALID_PAN_EXCEPTION  EXCEPTION;
+ INVALID_ADHAR_EXCEPTION  EXCEPTION;
+ STATUS_PAN_ADHAR_EXCEPTION  EXCEPTION;
+ BEGIN
+ SELECT COUNT(*) INTO  L_count  from pan_card  where pan_num=p_pan_num;
+ if L_count=0 then
+ raise  INVALID_PAN_EXCEPTION ;
+ end if;
+  SELECT COUNT(*) INTO  L_count  from Adhar_card  where Adhar_Num =p_Adhar_num;
+ if L_count=0 then
+ raise  INVALID_ADHAR_EXCEPTION ;
+ end if;
+ 
+   SELECT COUNT(*) INTO  L_count  from  Adhar_Pan_Link where  pan_num=p_pan_num and  Adhar_Num =p_Adhar_num
+   and link_status='Y' ;
+ if L_count=0 then
+ raise   STATUS_PAN_ADHAR_EXCEPTION;
+ end if;
+
+ L_pan_num :=substr(p_pan_num,1,2)||'XXXXXX'||substr(p_pan_num,-2);
+ 
+l_Adhar_num := substr(p_Adhar_num,1,2)||'XXXXXX'||substr(p_Adhar_num,-2);
+
+p_msg:='your pan'||L_pan_num||'is already linked to given Adhar'||l_Adhar_num;
+
+Exception
+when  INVALID_PAN_EXCEPTION  then
+p_msg:='Error:Invalid PAN.Please retry';
+
+when INVALID_ADHAR_EXCEPTION  then
+p_msg :='Please enter a valid Adhar Number.';
+
+when  STATUS_PAN_ADHAR_EXCEPTION  then
+p_msg:='your Adhar and PAN is not Linked.Please try to link before deadline.';
+End;
+/
+========================================
+EXECUTE PL/SQL PROGRAM
+-----------------------
+Declare
+Result  varchar2(100);
+begin
+Adhar_Pan_Link_Pro(p_pan_num   =>'abc2113',
+p_Adhar_num  =>7777,
+p_msg  =>Result);
+Dbms_output.put_line(Result);
+end;
+======================================================
+Declare
+Result  varchar2(100);
+begin
+Adhar_Pan_Link_Pro(p_pan_num   =>'CS1111113D',
+p_Adhar_num  =>34777888999,
+p_msg  =>Result);
+Dbms_output.put_line(Result);
+end;
+====================================================================
